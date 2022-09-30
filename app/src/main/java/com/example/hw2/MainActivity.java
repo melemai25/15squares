@@ -1,10 +1,13 @@
 package com.example.hw2;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
@@ -12,12 +15,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private boolean isTouch = false;
-    private static final int col = 4;
-    private static final int grid = col * col;
 
-    private String[] blocks;
-
+    private int nullX = 3;
+    private int nullY = 3;
+    private RelativeLayout group;
+    private Button[][] blocks;
+    private int[] num;
 
 
     @Override
@@ -25,94 +28,86 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        init();
-        randomize();
-        display();
-
+        readyPuzzle();
+        makeNumArray();
+        makeNums();
+        showNums();
     }
 
-    public void display(){
-        ArrayList<Button> pieces=new ArrayList<>();
-        Button button;
-        for(int i=0;i<blocks.length;i++){
-            button = new Button(this);
-
-            if(blocks[i].equals("0")){
-                button.setText("1");
-            }
-            else if(blocks[i].equals("1")){
-                button.setText("2");
-            }
-            else if(blocks[i].equals("2")){
-                button.setText("2");
-            }
-            else if(blocks[i].equals("3")){
-                button.setText("2");
-            }
-            else if(blocks[i].equals("2")){
-                button.setText("3");
-            }
-            else if(blocks[i].equals("3")){
-                button.setText("4");
-            }
-            else if(blocks[i].equals("4")){
-                button.setText("5");
-            }
-            else if(blocks[i].equals("5")){
-                button.setText("6");
-            }
-            else if(blocks[i].equals("6")){
-                button.setText("7");
-            }
-            else if(blocks[i].equals("7")){
-                button.setText("8");
-            }
-            else if(blocks[i].equals("8")){
-                button.setText("9");
-            }
-            else if(blocks[i].equals("9")){
-                button.setText("10");
-            }
-            else if(blocks[i].equals("10")){
-                button.setText("11");
-            }
-            else if(blocks[i].equals("11")){
-                button.setText("12");
-            }
-            else if(blocks[i].equals("12")){
-                button.setText("13");
-            }
-            else if(blocks[i].equals("13")){
-                button.setText("14");
-            }
-            else if(blocks[i].equals("14")){
-                button.setText("15");
-            }
-            else if(blocks[i].equals("15")){
-                button.setText(" ");
-            }
-            pieces.add(button);
+    private void showNums() {
+        nullX = 3;
+        nullY = 3;
+        for (int i = 0; i < group.getChildCount() - 1; i++) {
+            blocks[i / 4][i % 4].setText(String.valueOf(num[i]));
         }
-
-
+        blocks[nullX][nullY].setText("");
     }
 
-    private void randomize(){
-        int nums;
-        String temp;
+    private void makeNums() {
+        int n = 15;
         Random random = new Random();
-        for (int i = blocks.length-1;i<0;i--){
-            nums=random.nextInt(i+1);
-            temp=blocks[nums];
-            blocks[nums]=blocks[i];
-            blocks[i]=temp;
+        while (n > 1) {
+            int ranNum = random.nextInt(n--);
+            int temp = num[ranNum];
+            num[ranNum] = num[n];
+            num[n] = temp;
+        }
+
+    }
+
+    private void makeNumArray() {
+        num = new int[16];
+        for (int i = 0; i < group.getChildCount(); i++) {
+            num[i] = i + 1;
 
         }
     }
-    public void init(){
-        blocks = new String[grid];
-        for (int i=0;i<grid;i++){
-            blocks[i] = String.valueOf(i);
+
+
+    private void readyPuzzle() {
+        group = findViewById(R.id.group);
+        blocks = new Button[4][4];
+        for (int i = 0; i < group.getChildCount(); i++) {
+            blocks[i / 4][i % 4] = (Button) group.getChildAt(i);
+        }
+    }
+
+    public void buttonClick(View view) {
+        Button block = (Button) view;
+        int x = block.getTag().toString().charAt(0) - '0';
+        int y = block.getTag().toString().charAt(1) - '0';
+
+        if((Math.abs(nullX-x)==1&&nullY==y)||(Math.abs(nullY-y)==1&&nullX==x)){
+            blocks[nullX][nullY].setText(block.getText().toString());
+            blocks[nullX][nullY].setBackgroundResource(android.R.drawable.btn_default);
+            block.setText(" ");
+            nullX=x;//moves the empty button
+            nullY=y;
+            checkSolve();
+        }
+
+    }
+
+    private void checkSolve() {
+        boolean solved = false;
+        if (nullX == 3 && nullY == 3) {
+            for (int i = 0; i < group.getChildCount() - 1; i++) {
+                if (blocks[i / 4][i % 4].getText().toString().equals(String.valueOf(i + 1))) {
+                    solved = true;
+                } else {
+                    solved = false;
+                    break;
+                }
+            }
+
+        }
+        if (solved) {
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 15; j++) {
+                    blocks[i][j].setBackgroundColor(getResources().getColor(R.color.green));
+                }
+            }
         }
     }
 }
+
