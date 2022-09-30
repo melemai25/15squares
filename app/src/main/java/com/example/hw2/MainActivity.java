@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity{
         makeNums();
         showNums();
         Button resetBut = (Button)findViewById(R.id.restart);
-        resetBut.setText("Reset");
+        resetBut.setText("Restart");
     }
 
     private void makeNums() {
