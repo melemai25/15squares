@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -14,7 +18,7 @@ import android.widget.Switch;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private int nullX = 3;
     private int nullY = 3;
@@ -41,6 +45,14 @@ public class MainActivity extends AppCompatActivity {
             blocks[i / 4][i % 4].setText(String.valueOf(num[i]));
         }
         blocks[nullX][nullY].setText("");
+    }
+    public void restart(View button) {
+        readyPuzzle();
+        makeNumArray();
+        makeNums();
+        showNums();
+        Button resetBut = (Button)findViewById(R.id.restart);
+        resetBut.setText("Reset");
     }
 
     private void makeNums() {
@@ -102,12 +114,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
         if (solved) {
-            for (int i = 0; i < 15; i++) {
-                for (int j = 0; j < 15; j++) {
-                    blocks[i][j].setBackgroundColor(getResources().getColor(R.color.green));
-                }
-            }
+            Button button = (Button)findViewById(R.id.restart);
+            button.setText("You Win! Play Again!");
         }
     }
+
 }
 
